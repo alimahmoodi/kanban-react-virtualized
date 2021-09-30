@@ -44,7 +44,6 @@ export default function App() {
     const copyOf = [...people];
     const sourceItem = copyOf.splice(result.source.index, 1);
     copyOf.splice(result.destination.index, 0, sourceItem[0]);
-    console.log(copyOf, "copyOf");
     setPeople(copyOf);
   };
 
@@ -87,7 +86,7 @@ export default function App() {
               >
                 <div style={{ border: "1px solid black", margin: 8 }}>
                   <h2>{person.name}</h2>
-                  {/*<p>{person.bio}</p>*/}
+                  <p>{person.bio}</p>
                 </div>
               </div>
             )}
@@ -117,7 +116,7 @@ export default function App() {
               >
                 <div style={{ border: "1px solid black" }}>
                   <h2>{people[rubric.source.index].name}</h2>
-                  {/*<p>{people[rubric.source.index].bio}</p>*/}
+                  <p>{people[rubric.source.index].bio}</p>
                 </div>
               </div>
             )}
