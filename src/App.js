@@ -1,4 +1,5 @@
 import React, { useRef, useState } from "react";
+import ReactDOM from "react-dom";
 import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
 
 import {
@@ -19,12 +20,10 @@ export default function App() {
   const listRef = useRef();
 
   const [people, setPeople] = React.useState([]);
-  const [time, setTime] = React.useState(new Date());
-  const [clickRow, setClickRow] = useState(null);
 
   React.useEffect(() => {
     setPeople(
-      [...Array(10000).keys()].map((key) => {
+      [...Array(3000).keys()].map((key) => {
         return {
           id: `${key}test`,
           name: `${faker.name.firstName()} ${faker.name.lastName()}`,
@@ -33,27 +32,20 @@ export default function App() {
       })
     );
   }, []);
-  //
-  // React.useEffect(() => {
-  //   console.log(people, "peaple");
-  // }, [people]);
-
-  // React.useEffect(() => {
-  //   const interval = setInterval(() => {
-  //     setTime(new Date());
-  //   }, 1000);
-  //
-  //   return () => clearInterval(interval);
-  // }, []);
 
   const handleHover = (index) => {
-    cache.current.clear(index);
-    listRef.current.forceUpdateGrid();
-    setClickRow(index);
+    // cache.current.clear(index);
+    // listRef.current.forceUpdateGrid();
+    // setClickRow(index);
   };
 
   const onDragEnd = (result) => {
-    console.log(result, "result");
+    if (!result.destination) return;
+    const copyOf = [...people];
+    const sourceItem = copyOf.splice(result.source.index, 1);
+    copyOf.splice(result.destination.index, 0, sourceItem[0]);
+    console.log(copyOf, "copyOf");
+    setPeople(copyOf);
   };
 
   function getStyle(provided, style) {
@@ -78,14 +70,14 @@ export default function App() {
     };
     return (
       <CellMeasurer
-        key={key}
+        key={person.id}
         cache={cache.current}
         parent={parent}
         columnIndex={0}
         rowIndex={index}
       >
         {({ registerChild }) => (
-          <Draggable key={key} draggableId={person.id} index={index}>
+          <Draggable draggableId={person.id} index={index}>
             {(provided) => (
               <div
                 ref={provided.innerRef}
@@ -95,7 +87,7 @@ export default function App() {
               >
                 <div style={{ border: "1px solid black", margin: 8 }}>
                   <h2>{person.name}</h2>
-                  <p>{person.bio}</p>
+                  {/*<p>{person.bio}</p>*/}
                 </div>
               </div>
             )}
@@ -107,7 +99,6 @@ export default function App() {
 
   return (
     <div>
-      <h1>{time.toISOString()}</h1>
       <div
         style={{
           // width: "90%",
@@ -126,7 +117,7 @@ export default function App() {
               >
                 <div style={{ border: "1px solid black" }}>
                   <h2>{people[rubric.source.index].name}</h2>
-                  <p>{people[rubric.source.index].bio}</p>
+                  {/*<p>{people[rubric.source.index].bio}</p>*/}
                 </div>
               </div>
             )}
@@ -142,7 +133,17 @@ export default function App() {
                 <AutoSizer>
                   {({ width, height }) => (
                     <List
-                      ref={listRef}
+                      ref={(ref) => {
+                        // react-virtualized has no way to get the list's ref that I can so
+                        // So we use the `ReactDOM.findDOMNode(ref)` escape hatch to get the ref
+                        if (ref) {
+                          // eslint-disable-next-line react/no-find-dom-node
+                          const whatHasMyLifeComeTo = ReactDOM.findDOMNode(ref);
+                          if (whatHasMyLifeComeTo instanceof HTMLElement) {
+                            provided.innerRef(whatHasMyLifeComeTo);
+                          }
+                        }
+                      }}
                       width={width}
                       height={height}
                       rowHeight={cache.current.rowHeight}
@@ -152,7 +153,7 @@ export default function App() {
                     />
                   )}
                 </AutoSizer>
-                {provided.placeholder}
+                {/*{provided.placeholder}*/}
               </div>
             )}
           </Droppable>
