@@ -44,11 +44,6 @@ const columnsFromBackend = {
   },
 };
 
-const cache = new CellMeasurerCache({
-  fixedWidth: true,
-  defaultHeight: 100,
-});
-
 export default function App() {
   // const cache = React.useRef(
   //   new CellMeasurerCache({
@@ -60,6 +55,22 @@ export default function App() {
   const [people, setPeople] = React.useState([]);
 
   const [columns, setColumns] = useState(columnsFromBackend);
+
+  const cache = React.useMemo(
+    () =>
+      new CellMeasurerCache({
+        fixedWidth: true,
+        defaultHeight: 200,
+      }),
+    [columns]
+  );
+
+  const crateCatch = () => {
+    return new CellMeasurerCache({
+      fixedWidth: true,
+      defaultHeight: 500,
+    });
+  };
 
   React.useEffect(() => {
     setColumns(columnsFromBackend);
@@ -85,7 +96,7 @@ export default function App() {
   }
 
   const rowRender =
-    (items) =>
+    (items, csh) =>
     ({ key, index, style, parent }) => {
       const item = items[index];
       console.log(item, "item");
@@ -99,7 +110,7 @@ export default function App() {
       return (
         <CellMeasurer
           key={item.id}
-          cache={cache}
+          cache={csh}
           parent={parent}
           columnIndex={0}
           rowIndex={index}
@@ -137,6 +148,8 @@ export default function App() {
       >
         <DragDropContext onDragEnd={onDragEnd}>
           {Object.entries(columns).map(([columnId, column], index) => {
+            const csh = crateCatch();
+            console.log(csh);
             return (
               <div
                 style={{
@@ -192,10 +205,10 @@ export default function App() {
                             }}
                             width={width}
                             height={height}
-                            rowHeight={cache.rowHeight}
-                            deferredMeasurementCache={cache.current}
+                            rowHeight={csh.rowHeight}
+                            deferredMeasurementCache={csh}
                             rowCount={column.items.length}
-                            rowRenderer={rowRender(column.items)}
+                            rowRenderer={rowRender(column.items, csh)}
                           />
                         )}
                       </AutoSizer>
