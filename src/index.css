@@ -11,3 +11,13 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+.hidden{
+  height: 40px;
+  background-color: aquamarine;
+  display: none;
+}
+
+.wrapper:hover .hidden{
+display: block;
+}
