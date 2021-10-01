@@ -13,11 +13,10 @@ code {
 }
 
 .hidden{
-  height: 40px;
   background-color: aquamarine;
   display: none;
 }
 
-.wrapper:hover .hidden{
+.item:hover .hidden{
 display: block;
 }
